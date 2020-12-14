@@ -7,9 +7,9 @@
 
 import UIKit
 
-final class MovieCollectionViewCell: UICollectionViewCell {
+final class MovieListCollectionViewCell: UICollectionViewCell {
     
-    static let identifier = "MovieCollectionViewCell"
+    static let identifier = "MovieListCollectionViewCell"
     
     private let imageView: AsyncLoadedImageView = {
         let imageView = AsyncLoadedImageView()
@@ -37,7 +37,7 @@ final class MovieCollectionViewCell: UICollectionViewCell {
     
     private let overviewLabel: ShimmerableLabel = {
         let label = ShimmerableLabel()
-        label.font = .preferredFont(forTextStyle: .caption1)
+        label.font = .preferredFont(forTextStyle: .footnote)
         label.numberOfLines = 0
         return label
     }()
@@ -89,7 +89,7 @@ final class MovieCollectionViewCell: UICollectionViewCell {
 
 // MARK: - Configurations
 
-extension MovieCollectionViewCell {
+extension MovieListCollectionViewCell {
     
     private func configureUI() {
         contentView.backgroundColor = .systemBackground

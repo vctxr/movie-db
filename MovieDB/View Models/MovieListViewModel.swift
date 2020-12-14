@@ -41,7 +41,7 @@ final class MovieListViewModel {
     func fetchMovies(endpoint: MovieDBEndpoint) {
         movieDBAPI.task?.cancel()
         
-        movieDBAPI.fetchMovies(with: endpoint) { [weak self] (result: Result<MovieDBResponse, APIError>) in
+        movieDBAPI.fetch(with: endpoint) { [weak self] (result: Result<MovieDBResponse, APIError>) in
             DispatchQueue.main.async {
                 self?.isShowingPlaceholder = false
                 

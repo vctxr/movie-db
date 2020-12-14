@@ -8,7 +8,7 @@
 import UIKit
 
 final class MovieListViewController: UIViewController {
-    
+        
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: view.frame.width - 12, height: 250)
@@ -16,7 +16,7 @@ final class MovieListViewController: UIViewController {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = .clear
-        collectionView.register(MovieCollectionViewCell.self, forCellWithReuseIdentifier: MovieCollectionViewCell.identifier)
+        collectionView.register(MovieListCollectionViewCell.self, forCellWithReuseIdentifier: MovieListCollectionViewCell.identifier)
         collectionView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 20, right: 0)
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -52,7 +52,15 @@ final class MovieListViewController: UIViewController {
         super.viewDidLoad()
         configureUI()
         configureLayout()
+        viewModel.delegate = self
         viewModel.fetchMovies(endpoint: .popular)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if bottomMenu.isPresented {
+            bottomMenu.dismiss()
+        }
     }
 
     
@@ -95,7 +103,7 @@ extension MovieListViewController: UICollectionViewDelegateFlowLayout, UICollect
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MovieCollectionViewCell.identifier, for: indexPath) as! MovieCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MovieListCollectionViewCell.identifier, for: indexPath) as! MovieListCollectionViewCell
         
         if viewModel.isShowingPlaceholder {
             cell.animateShimmer(true)
@@ -106,6 +114,13 @@ extension MovieListViewController: UICollectionViewDelegateFlowLayout, UICollect
         }
         
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard !viewModel.isShowingPlaceholder else { return }
+        let selectedMovieViewModel = viewModel.cellViewModels[indexPath.row]
+        let detailVC = MovieDetailViewController(movieCellViewModel: selectedMovieViewModel)
+        navigationController?.pushViewController(detailVC, animated: true)
     }
 }
 
@@ -138,17 +153,8 @@ extension MovieListViewController: BottomMenuViewDelegate {
 extension MovieListViewController {
     
     private func setupNavigationBar() {
-        let titleLabel = UILabel()
-        titleLabel.text = viewModel.title
-        titleLabel.textColor = .white
-        titleLabel.font = .systemFont(ofSize: 18, weight: .bold)
-        
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: titleLabel)
+        setNavigationBarLeftTitle(title: viewModel.title, barTint: .kitabisaBlue)
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "heart.fill"), style: .plain, target: self, action: #selector(didTapFavorite))
-        
-        navigationController?.navigationBar.barTintColor = .kitabisaBlue
-        navigationController?.navigationBar.isTranslucent = false
-        navigationController?.navigationBar.tintColor = .white
         
         navigationController?.navigationBar.layer.shadowColor = UIColor.black.cgColor
         navigationController?.navigationBar.layer.shadowRadius = 10
@@ -160,7 +166,6 @@ extension MovieListViewController {
         setupNavigationBar()
         bottomMenu.menuOptions = viewModel.categoryMenuOptions
         bottomMenu.delegate = self
-        viewModel.delegate = self
     }
     
     private func configureLayout() {

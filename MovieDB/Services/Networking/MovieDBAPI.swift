@@ -11,7 +11,7 @@ class MovieDBAPI: APICaller {
     
     var task: URLSessionDataTask?
         
-    func fetchMovies<T: Decodable>(with endpoint: MovieDBEndpoint, completion: @escaping (Result<T, APIError>) -> Void) {
+    func fetch<T: Decodable>(with endpoint: MovieDBEndpoint, completion: @escaping (Result<T, APIError>) -> Void) {
         let request = endpoint.urlRequest
         print("Requesting with url: \(request)")
         get(with: &task, request: request, completion: completion)
