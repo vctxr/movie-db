@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ReviewCellViewModel {
+struct ReviewViewModel {
     
     let authorName: String
     let username: String

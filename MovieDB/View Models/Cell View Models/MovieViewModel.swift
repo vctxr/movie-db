@@ -7,13 +7,14 @@
 
 import Foundation
 
-struct MovieCellViewModel {
+struct MovieViewModel {
     
     let id: Int
     let title: String
     let releaseDate: String
     let overview: String
     let imagePath: String
+    var isFavorite: Bool?
     
     init(movie: MovieResult) {
         id = movie.id
@@ -21,5 +22,13 @@ struct MovieCellViewModel {
         releaseDate = movie.releaseDate
         overview = movie.overview
         imagePath = movie.posterPath ?? movie.backdropPath
+    }
+    
+    init(movie: Movie) {
+        id = Int(movie.id)
+        title = movie.title ?? ""
+        releaseDate = movie.releaseDate ?? ""
+        overview = movie.overview ?? ""
+        imagePath = movie.imagePath ?? ""
     }
 }

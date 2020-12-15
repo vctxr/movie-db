@@ -60,7 +60,7 @@ final class MovieListCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(with viewModel: MovieCellViewModel) {
+    func configure(with viewModel: MovieViewModel) {
         titleLabel.text = viewModel.title
         releaseDateLabel.text = viewModel.releaseDate
         overviewLabel.text = viewModel.overview

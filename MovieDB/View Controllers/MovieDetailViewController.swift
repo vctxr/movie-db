@@ -7,84 +7,6 @@
 
 import UIKit
 
-final class NoReviewsFooterView: UICollectionReusableView {
-    
-    static let identifier = "NoReviewsFooterView"
-    
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "No Reviews for this movie"
-        label.font = .preferredFont(forTextStyle: .headline)
-        label.textAlignment = .center
-        return label
-    }()
-    
-    private let subTitleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Be sure to comeback to check other reviews."
-        label.textColor = .secondaryLabel
-        label.font = .preferredFont(forTextStyle: .subheadline)
-        label.textAlignment = .center
-        return label
-    }()
-    
-    private let spinner =  UIActivityIndicatorView(style: .medium)
-    
-    private let vStack: UIStackView = {
-        let stack = UIStackView()
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        stack.axis = .vertical
-        stack.spacing = 2
-        return stack
-    }()
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        configureUI()
-        configureLayout()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    func animateSpinner(animate: Bool) {
-        if animate {
-            spinner.startAnimating()
-            vStack.isHidden = true
-        } else {
-            spinner.stopAnimating()
-            vStack.isHidden = false
-        }
-    }
-}
-
-
-// MARK: - Configurations
-
-extension NoReviewsFooterView {
-    
-    private func configureUI() {
-        spinner.translatesAutoresizingMaskIntoConstraints = false
-    }
-    
-    private func configureLayout() {
-        vStack.addArrangedSubview(titleLabel)
-        vStack.addArrangedSubview(subTitleLabel)
-        
-        addSubview(vStack)
-        addSubview(spinner)
-        
-        NSLayoutConstraint.activate([
-            vStack.centerXAnchor.constraint(equalTo: centerXAnchor),
-            vStack.centerYAnchor.constraint(equalTo: centerYAnchor),
-            
-            spinner.centerXAnchor.constraint(equalTo: centerXAnchor),
-            spinner.centerYAnchor.constraint(equalTo: centerYAnchor)
-        ])
-    }
-}
-
 final class MovieDetailViewController: UIViewController {
     
     private lazy var collectionView: UICollectionView = {
@@ -97,7 +19,7 @@ final class MovieDetailViewController: UIViewController {
         collectionView.backgroundColor = .clear
         collectionView.register(MovieDetailCollectionViewCell.self, forCellWithReuseIdentifier: MovieDetailCollectionViewCell.identifier)
         collectionView.register(ReviewCollectionViewCell.self, forCellWithReuseIdentifier: ReviewCollectionViewCell.identifier)
-        collectionView.register(NoReviewsFooterView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: NoReviewsFooterView.identifier)
+        collectionView.register(MovieDetailFooterView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: MovieDetailFooterView.identifier)
         collectionView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 20, right: 0)
         collectionView.delaysContentTouches = false
         collectionView.alwaysBounceVertical = true
@@ -106,10 +28,10 @@ final class MovieDetailViewController: UIViewController {
         return collectionView
     }()
     
-    private let viewModel: MovieDetailViewModel
+    private let viewModel: MovieDetailListViewModel
     
-    init(movieCellViewModel: MovieCellViewModel) {
-        viewModel = MovieDetailViewModel(movieDBAPI: MovieDBAPI(), movieCellViewModel: movieCellViewModel)
+    init(movieViewModel: MovieViewModel) {
+        viewModel = MovieDetailListViewModel(movieViewModel: movieViewModel)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -121,19 +43,26 @@ final class MovieDetailViewController: UIViewController {
         super.viewDidLoad()
         configureUI()
         configureLayout()
-        viewModel.delegate = self
-        viewModel.fetchDetails()
-        viewModel.fetchReviews()
+        configureViewModel()
+    }
+    
+    deinit {
+        print("Deinit called - no memory leaks")
     }
 }
 
 
 // MARK: - View Model Delegate
 
-extension MovieDetailViewController: MovieDetailViewModelDelegate {
+extension MovieDetailViewController: MovieDetailListViewModelDelegate {
     
-    func didUpdateCellViewModels(with error: APIError?) {
+    func didUpdateViewModels(with error: APIError?) {
         collectionView.reloadData()
+    }
+    
+    func didUpdateFavorites() {
+        let cell = collectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? MovieDetailCollectionViewCell
+        cell?.configure(with: viewModel.movieViewModel, and: viewModel.movieDetailViewModel)
     }
 }
 
@@ -143,7 +72,11 @@ extension MovieDetailViewController: MovieDetailViewModelDelegate {
 extension MovieDetailViewController: MovieDetailCollectionViewCellDelegate {
     
     func didTapFavorite(favorite: Bool) {
-        print(favorite)
+        if favorite {
+            viewModel.addToFavorites(viewModel: viewModel.movieViewModel)
+        } else {
+            viewModel.removeFromFavorites(viewModel: viewModel.movieViewModel)
+        }
     }
 }
 
@@ -157,31 +90,31 @@ extension MovieDetailViewController: UICollectionViewDelegateFlowLayout, UIColle
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return section == 0 ? 1 : viewModel.reviewCellViewModels.count
+        return section == 0 ? 1 : viewModel.reviewViewModels.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         switch indexPath.section {
         case 0:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MovieDetailCollectionViewCell.identifier, for: indexPath) as! MovieDetailCollectionViewCell
-            cell.configure(with: viewModel.movieCellViewModel, and: viewModel.movieCellDetailViewModel)
+            cell.configure(with: viewModel.movieViewModel, and: viewModel.movieDetailViewModel)
             cell.delegate = self
             return cell
         default:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ReviewCollectionViewCell.identifier, for: indexPath) as! ReviewCollectionViewCell
-            cell.configure(with: viewModel.reviewCellViewModels[indexPath.row])
+            cell.configure(with: viewModel.reviewViewModels[indexPath.row])
             return cell
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        let footer = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: NoReviewsFooterView.identifier, for: indexPath) as! NoReviewsFooterView
+        let footer = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: MovieDetailFooterView.identifier, for: indexPath) as! MovieDetailFooterView
         footer.animateSpinner(animate: viewModel.isFetchingReviews)
         return footer
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        if section == 0 && viewModel.reviewCellViewModels.isEmpty {
+        if section == 0 && viewModel.reviewViewModels.isEmpty {
             return CGSize(width: 0, height: 80)
         }
         return .zero
@@ -192,6 +125,13 @@ extension MovieDetailViewController: UICollectionViewDelegateFlowLayout, UIColle
 // MARK: - Configurations
 
 extension MovieDetailViewController {
+    
+    private func configureViewModel() {
+        viewModel.delegate = self
+        viewModel.checkFavorites()
+        viewModel.fetchDetails()
+        viewModel.fetchReviews()
+    }
     
     private func configureUI() {
         view.backgroundColor = .systemBackground

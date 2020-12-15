@@ -10,7 +10,7 @@ import Foundation
 protocol MovieListViewModelDelegate: AnyObject {
     
     /// Called after cell view models is updated with an optional error.
-    func didUpdateCellViewModels(with error: APIError?)
+    func didUpdateViewModels(with error: APIError?)
         
     /// Called whenever collectionview needed to be reloaded for showing placeholders.
     func shouldReloadData()
@@ -23,7 +23,7 @@ final class MovieListViewModel {
 
     let title = "Kitabisa Movie Database"
     let categoryMenuOptions = MenuOption.allOptions
-    var cellViewModels: [MovieCellViewModel] = []
+    var movieViewModels: [MovieViewModel] = []
     var isShowingPlaceholder: Bool = true
     var selectedCategory: Category = .popular {
         didSet {
@@ -34,9 +34,15 @@ final class MovieListViewModel {
     
     private let movieDBAPI: MovieDBAPI
     
-    init(movieDBAPI: MovieDBAPI) {
+    
+    // MARK: - Init
+    
+    init(movieDBAPI: MovieDBAPI = MovieDBAPI()) {
         self.movieDBAPI = movieDBAPI
     }
+    
+    
+    // MARK: - Public Functions
     
     func fetchMovies(endpoint: MovieDBEndpoint) {
         movieDBAPI.task?.cancel()
@@ -47,10 +53,10 @@ final class MovieListViewModel {
                 
                 switch result {
                 case .success(let response):
-                    self?.cellViewModels = response.results.map { MovieCellViewModel(movie: $0) }
-                    self?.delegate?.didUpdateCellViewModels(with: nil)
+                    self?.movieViewModels = response.results.map { MovieViewModel(movie: $0) }
+                    self?.delegate?.didUpdateViewModels(with: nil)
                 case .failure(let error):
-                    self?.delegate?.didUpdateCellViewModels(with: error)
+                    self?.delegate?.didUpdateViewModels(with: error)
                 }
             }
         }

@@ -82,7 +82,7 @@ class ReviewCollectionViewCell: UICollectionViewCell {
         return super.systemLayoutSizeFitting(CGSize(width: UIScreen.main.bounds.width - 12, height: UIView.layoutFittingCompressedSize.height), withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
     }
     
-    func configure(with viewModel: ReviewCellViewModel) {
+    func configure(with viewModel: ReviewViewModel) {
         authorLabel.text = viewModel.authorName
         usernameLabel.text = viewModel.username
         contentLabel.text = viewModel.content

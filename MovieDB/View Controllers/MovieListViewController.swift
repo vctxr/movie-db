@@ -42,8 +42,7 @@ final class MovieListViewController: UIViewController {
     }()
     
     private let bottomMenu = BottomMenuView()
-    
-    private let viewModel = MovieListViewModel(movieDBAPI: MovieDBAPI())
+    private let viewModel = MovieListViewModel()
 
     
     // MARK: - VC Lifecycle
@@ -67,7 +66,8 @@ final class MovieListViewController: UIViewController {
     // MARK: - Handlers
     
     @objc private func didTapFavorite() {
-        
+        let favoriteVC = FavoriteListViewController()
+        navigationController?.pushViewController(favoriteVC, animated: true)
     }
     
     @objc private func didTapCategory() {
@@ -80,7 +80,7 @@ final class MovieListViewController: UIViewController {
 
 extension MovieListViewController: MovieListViewModelDelegate {
     
-    func didUpdateCellViewModels(with error: APIError?) {
+    func didUpdateViewModels(with error: APIError?) {
         if let error = error {
             print("Error: \(error)")
             // TODO: Handle fetch error
@@ -99,7 +99,7 @@ extension MovieListViewController: MovieListViewModelDelegate {
 extension MovieListViewController: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return (viewModel.isShowingPlaceholder && viewModel.cellViewModels.isEmpty) ? 3 : viewModel.cellViewModels.count
+        return (viewModel.isShowingPlaceholder && viewModel.movieViewModels.isEmpty) ? 3 : viewModel.movieViewModels.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -109,7 +109,7 @@ extension MovieListViewController: UICollectionViewDelegateFlowLayout, UICollect
             cell.animateShimmer(true)
         } else {
             cell.animateShimmer(false)
-            let movieViewModel = viewModel.cellViewModels[indexPath.row]
+            let movieViewModel = viewModel.movieViewModels[indexPath.row]
             cell.configure(with: movieViewModel)
         }
         
@@ -118,8 +118,8 @@ extension MovieListViewController: UICollectionViewDelegateFlowLayout, UICollect
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard !viewModel.isShowingPlaceholder else { return }
-        let selectedMovieViewModel = viewModel.cellViewModels[indexPath.row]
-        let detailVC = MovieDetailViewController(movieCellViewModel: selectedMovieViewModel)
+        let selectedMovieViewModel = viewModel.movieViewModels[indexPath.row]
+        let detailVC = MovieDetailViewController(movieViewModel: selectedMovieViewModel)
         navigationController?.pushViewController(detailVC, animated: true)
     }
 }

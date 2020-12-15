@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct MovieCellDetailViewModel {
+struct MovieDetailViewModel {
     
     let popularity: Double
     let voteAverage: Double

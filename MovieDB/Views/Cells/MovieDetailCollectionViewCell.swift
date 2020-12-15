@@ -135,8 +135,8 @@ final class MovieDetailCollectionViewCell: UICollectionViewCell {
     
     private var isFavorite: Bool = false {
         didSet {
-            isFavorite ? favoriteButton.setImage(UIImage(systemName: "heart.fill"), for: .normal) : favoriteButton.setImage(UIImage(systemName: "heart"), for: .normal)
-            delegate?.didTapFavorite(favorite: isFavorite)
+            isFavorite ? favoriteButton.setImage(UIImage(systemName: "heart.fill"), for: .normal) :
+                         favoriteButton.setImage(UIImage(systemName: "heart"), for: .normal)
         }
     }
     
@@ -161,13 +161,16 @@ final class MovieDetailCollectionViewCell: UICollectionViewCell {
     
     @objc private func didTapFavorite() {
         isFavorite.toggle()
+        delegate?.didTapFavorite(favorite: isFavorite)
     }
     
-    func configure(with viewModel: MovieCellViewModel, and detailViewModel: MovieCellDetailViewModel?) {
+    func configure(with viewModel: MovieViewModel, and detailViewModel: MovieDetailViewModel?) {
         titleLabel.text = viewModel.title
         releaseDateLabel.text = viewModel.releaseDate
         overviewLabel.text = viewModel.overview
         imageView.loadImage(endpoint: .image(size: .w200, path: viewModel.imagePath))
+        
+        isFavorite = viewModel.isFavorite ?? false
         
         guard let detailViewModel = detailViewModel else { return }
         popularityLabel.text = "\(detailViewModel.popularity)"
