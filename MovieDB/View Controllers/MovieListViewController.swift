@@ -12,7 +12,7 @@ final class MovieListViewController: UIViewController {
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumLineSpacing = 6
-        layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+        layout.estimatedItemSize = CGSize(width: UIDevice.current.safeAreaWidth - 12, height: 250)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = .clear
@@ -97,7 +97,7 @@ extension MovieListViewController: MovieListViewModelDelegate {
         } else {
             messageView.removeFromSuperview()
         }
-        
+
         collectionView.reloadData()
     }
     
@@ -129,6 +129,10 @@ extension MovieListViewController: UICollectionViewDelegateFlowLayout, UICollect
         return cell
     }
     
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: UIDevice.current.safeAreaWidth - 12, height: 250)
+    }
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard !viewModel.isShowingPlaceholder else { return }
         let selectedMovieViewModel = viewModel.movieViewModels[indexPath.row]
@@ -145,7 +149,7 @@ extension MovieListViewController: BottomMenuViewDelegate {
     func didSelect(menu: MenuOption) {
         guard menu.category != viewModel.selectedCategory else { return }
         
-        collectionView.setContentOffset(CGPoint(x: 0, y: -12), animated: true)
+        collectionView.setContentOffset(CGPoint(x: 0, y: -12), animated: false)
         viewModel.selectedCategory = menu.category
         
         switch menu.category {
