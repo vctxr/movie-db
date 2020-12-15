@@ -44,7 +44,7 @@ final class MovieListViewModel {
     
     // MARK: - Public Functions
     
-    func fetchMovies(endpoint: MovieDBEndpoint) {
+    func fetchMovies(endpoint: MovieDBEndpoint, completion: ((APIError?) -> Void)? = nil) {
         movieDBAPI.task?.cancel()
         
         movieDBAPI.fetch(with: endpoint) { [weak self] (result: Result<MovieDBResponse, APIError>) in
@@ -55,8 +55,10 @@ final class MovieListViewModel {
                 case .success(let response):
                     self?.movieViewModels = response.results.map { MovieViewModel(movie: $0) }
                     self?.delegate?.didUpdateViewModels(with: nil)
+                    completion?(nil)
                 case .failure(let error):
                     self?.delegate?.didUpdateViewModels(with: error)
+                    completion?(error)
                 }
             }
         }

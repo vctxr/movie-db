@@ -5,10 +5,12 @@
         <attribute name="id" attributeType="Integer 64" usesScalarValueType="YES"/>
         <attribute name="imagePath" attributeType="String"/>
         <attribute name="overview" attributeType="String"/>
+        <attribute name="popularity" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="releaseDate" attributeType="String"/>
         <attribute name="title" attributeType="String"/>
+        <attribute name="voteAverage" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
     </entity>
     <elements>
-        <element name="Movie" positionX="-63" positionY="-18" width="128" height="119"/>
+        <element name="Movie" positionX="-63" positionY="-18" width="128" height="149"/>
     </elements>
 </model>

@@ -42,6 +42,12 @@ final class MovieListViewController: UIViewController {
     }()
     
     private let bottomMenu = BottomMenuView()
+    private lazy var messageView: MessageView = {
+        let messageView = MessageView()
+        messageView.configure(with: "Unable to fetch movies", subtitle: "Please check your internet connection.")
+        return messageView
+    }()
+    
     private let viewModel = MovieListViewModel()
 
     
@@ -82,9 +88,16 @@ extension MovieListViewController: MovieListViewModelDelegate {
     
     func didUpdateViewModels(with error: APIError?) {
         if let error = error {
-            print("Error: \(error)")
-            // TODO: Handle fetch error
+            switch error {
+            case .noConnection:
+                messageView.present(in: view)
+            default:
+                break
+            }
+        } else {
+            messageView.removeFromSuperview()
         }
+        
         collectionView.reloadData()
     }
     
@@ -132,6 +145,7 @@ extension MovieListViewController: BottomMenuViewDelegate {
     func didSelect(menu: MenuOption) {
         guard menu.category != viewModel.selectedCategory else { return }
         
+        collectionView.setContentOffset(CGPoint(x: 0, y: -12), animated: true)
         viewModel.selectedCategory = menu.category
         
         switch menu.category {

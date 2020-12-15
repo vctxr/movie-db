@@ -110,6 +110,38 @@ final class MovieDetailCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
+    private let budgetTitleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Budget"
+        label.textAlignment = .center
+        label.font = .preferredFont(forTextStyle: .subheadline)
+        return label
+    }()
+    
+    private let budgetLabel: UILabel = {
+        let label = UILabel()
+        label.text = "--"
+        label.textAlignment = .center
+        label.font = .preferredFont(forTextStyle: .headline)
+        return label
+    }()
+    
+    private let revenueTitleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Revenue"
+        label.textAlignment = .center
+        label.font = .preferredFont(forTextStyle: .subheadline)
+        return label
+    }()
+    
+    private let revenueLabel: UILabel = {
+        let label = UILabel()
+        label.text = "--"
+        label.textAlignment = .center
+        label.font = .preferredFont(forTextStyle: .headline)
+        return label
+    }()
+    
     private let detailHStack: UIStackView = {
         let stack = UIStackView()
         stack.translatesAutoresizingMaskIntoConstraints = false
@@ -169,12 +201,18 @@ final class MovieDetailCollectionViewCell: UICollectionViewCell {
         releaseDateLabel.text = viewModel.releaseDate
         overviewLabel.text = viewModel.overview
         imageView.loadImage(endpoint: .image(size: .w200, path: viewModel.imagePath))
+        popularityLabel.text = "\(viewModel.popularity)"
+        voteAverageLabel.text = "\(viewModel.voteAverage)"
         
         isFavorite = viewModel.isFavorite ?? false
+
+        guard let detailViewModel = detailViewModel,
+              detailViewModel.budget > 0,
+              detailViewModel.revenue > 0
+        else { return }
         
-        guard let detailViewModel = detailViewModel else { return }
-        popularityLabel.text = "\(detailViewModel.popularity)"
-        voteAverageLabel.text = "\(detailViewModel.voteAverage)"
+        budgetLabel.text = detailViewModel.budget.currencyFormat
+        revenueLabel.text = detailViewModel.revenue.currencyFormat
     }
 }
 
@@ -212,8 +250,18 @@ extension MovieDetailCollectionViewCell {
         leftVStack.addArrangedSubview(popularityTitleLabel)
         leftVStack.addArrangedSubview(popularityLabel)
         
+        leftVStack.setCustomSpacing(16, after: popularityLabel)
+        
+        leftVStack.addArrangedSubview(budgetTitleLabel)
+        leftVStack.addArrangedSubview(budgetLabel)
+
         rightVStack.addArrangedSubview(voteAverageTitleLabel)
         rightVStack.addArrangedSubview(voteAverageLabel)
+        
+        rightVStack.setCustomSpacing(16, after: voteAverageLabel)
+
+        rightVStack.addArrangedSubview(revenueTitleLabel)
+        rightVStack.addArrangedSubview(revenueLabel)
         
         detailHStack.addArrangedSubview(leftVStack)
         detailHStack.addArrangedSubview(rightVStack)

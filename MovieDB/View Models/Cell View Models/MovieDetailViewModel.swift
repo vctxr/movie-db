@@ -9,11 +9,11 @@ import Foundation
 
 struct MovieDetailViewModel {
     
-    let popularity: Double
-    let voteAverage: Double
+    let budget: Int
+    let revenue: Int
     
     init(movieDetailResponse: MovieDetailResponse) {
-        popularity = movieDetailResponse.popularity
-        voteAverage = movieDetailResponse.voteAverage
+        budget = movieDetailResponse.budget
+        revenue = movieDetailResponse.revenue
     }
 }

@@ -9,8 +9,8 @@ import Foundation
 
 protocol MovieDetailListViewModelDelegate: AnyObject {
     
-    /// Called after view models is updated with an optional error.
-    func didUpdateViewModels(with error: APIError?)
+    /// Called after view models is updated
+    func didUpdateViewModels()
     
     func didUpdateFavorites()
 }
@@ -26,6 +26,8 @@ final class MovieDetailListViewModel {
     var reviewViewModels: [ReviewViewModel] = []
     var isFetchingReviews: Bool = false
     var isFetchingDetails: Bool = false
+    var fetchDetailError: APIError?
+    var fetchReviewError: APIError?
     
     private let movieDBAPI: MovieDBAPI
     private let coreDataService: CoreDataService
@@ -46,7 +48,7 @@ final class MovieDetailListViewModel {
     
     // MARK: - Public Functions
     
-    func fetchReviews() {
+    func fetchReviews(completion: ((APIError?) -> Void)? = nil) {
         isFetchingReviews = true
         movieDBAPI.fetch(with: .movieReviews(movieID: movieViewModel.id)) { [weak self] (result: Result<MovieReviewResponse, APIError>) in
             self?.isFetchingReviews = false
@@ -55,15 +57,19 @@ final class MovieDetailListViewModel {
                 switch result {
                 case .success(let response):
                     self?.reviewViewModels = response.results.map { ReviewViewModel(reviewResult: $0) }
-                    self?.delegate?.didUpdateViewModels(with: nil)
+                    self?.fetchReviewError = nil
+                    completion?(nil)
                 case .failure(let error):
-                    self?.delegate?.didUpdateViewModels(with: error)
+                    self?.fetchReviewError = error
+                    completion?(error)
                 }
+                
+                self?.delegate?.didUpdateViewModels()
             }
         }
     }
     
-    func fetchDetails() {
+    func fetchDetails(completion: ((APIError?) -> Void)? = nil) {
         isFetchingDetails = true
         movieDBAPI.fetch(with: .movieDetail(movieID: movieViewModel.id)) { [weak self] (result: Result<MovieDetailResponse, APIError>) in
             self?.isFetchingDetails = false
@@ -72,10 +78,14 @@ final class MovieDetailListViewModel {
                 switch result {
                 case .success(let response):
                     self?.movieDetailViewModel = MovieDetailViewModel(movieDetailResponse: response)
-                    self?.delegate?.didUpdateViewModels(with: nil)
+                    self?.fetchDetailError = nil
+                    completion?(nil)
                 case .failure(let error):
-                    self?.delegate?.didUpdateViewModels(with: error)
+                    self?.fetchDetailError = error
+                    completion?(error)
                 }
+                
+                self?.delegate?.didUpdateViewModels()
             }
         }
     }

@@ -14,6 +14,8 @@ struct MovieViewModel {
     let releaseDate: String
     let overview: String
     let imagePath: String
+    let popularity: Double
+    let voteAverage: Double
     var isFavorite: Bool?
     
     init(movie: MovieResult) {
@@ -22,6 +24,8 @@ struct MovieViewModel {
         releaseDate = movie.releaseDate
         overview = movie.overview
         imagePath = movie.posterPath ?? movie.backdropPath
+        popularity = movie.popularity
+        voteAverage = movie.voteAverage
     }
     
     init(movie: Movie) {
@@ -30,5 +34,7 @@ struct MovieViewModel {
         releaseDate = movie.releaseDate ?? ""
         overview = movie.overview ?? ""
         imagePath = movie.imagePath ?? ""
+        popularity = movie.popularity
+        voteAverage = movie.voteAverage
     }
 }

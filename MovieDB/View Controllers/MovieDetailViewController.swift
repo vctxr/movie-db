@@ -56,7 +56,7 @@ final class MovieDetailViewController: UIViewController {
 
 extension MovieDetailViewController: MovieDetailListViewModelDelegate {
     
-    func didUpdateViewModels(with error: APIError?) {
+    func didUpdateViewModels() {
         collectionView.reloadData()
     }
     
@@ -110,6 +110,7 @@ extension MovieDetailViewController: UICollectionViewDelegateFlowLayout, UIColle
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let footer = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: MovieDetailFooterView.identifier, for: indexPath) as! MovieDetailFooterView
         footer.animateSpinner(animate: viewModel.isFetchingReviews)
+        footer.configure(with: viewModel.fetchReviewError)
         return footer
     }
     

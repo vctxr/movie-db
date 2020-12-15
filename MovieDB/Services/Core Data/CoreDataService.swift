@@ -17,8 +17,10 @@ struct CoreDataService: CoreDataInteractor {
         movie.title = viewModel.title
         movie.releaseDate = viewModel.releaseDate
         movie.overview = viewModel.overview
+        movie.popularity = viewModel.popularity
+        movie.voteAverage = viewModel.voteAverage
         movie.createdAt = Date()
-
+        
         try viewContext.save()
     }
     

@@ -48,6 +48,16 @@ final class MovieDetailFooterView: UICollectionReusableView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func configure(with error: APIError?) {
+        if error != nil {
+            titleLabel.text = "Unable to fetch reviews"
+            subTitleLabel.text = "Please check your internet connection."
+        } else {
+            titleLabel.text = "No Reviews for this movie"
+            subTitleLabel.text = "Be sure to comeback to check other reviews."
+        }
+    }
+    
     func animateSpinner(animate: Bool) {
         if animate {
             spinner.startAnimating()
