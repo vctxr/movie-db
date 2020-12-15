@@ -60,6 +60,15 @@ final class MovieListCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        layer.shadowPath = UIBezierPath(roundedRect: bounds, cornerRadius: 0).cgPath
+    }
+    
+    override func systemLayoutSizeFitting(_ targetSize: CGSize, withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority, verticalFittingPriority: UILayoutPriority) -> CGSize {
+        super.systemLayoutSizeFitting(CGSize(width: UIDevice.current.safeAreaWidth - 12, height: 250), withHorizontalFittingPriority: .required, verticalFittingPriority: .required)
+    }
+    
     func configure(with viewModel: MovieViewModel) {
         titleLabel.text = viewModel.title
         releaseDateLabel.text = viewModel.releaseDate
@@ -94,7 +103,6 @@ extension MovieListCollectionViewCell {
     private func configureUI() {
         contentView.backgroundColor = .systemBackground
         
-        layer.shadowPath = UIBezierPath(roundedRect: bounds, cornerRadius: 0).cgPath
         layer.shadowColor = UIColor.black.cgColor
         layer.shadowOpacity = 0.6
         layer.shadowRadius = 3
@@ -108,12 +116,15 @@ extension MovieListCollectionViewCell {
         vStack.addArrangedSubview(titleLabel)
         vStack.addArrangedSubview(releaseDateLabel)
         vStack.addArrangedSubview(overviewLabel)
+        
+        let imageWidthConstraint = imageView.widthAnchor.constraint(equalToConstant: 150)
+        imageWidthConstraint.priority = .defaultHigh
 
         NSLayoutConstraint.activate([
             imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
             imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
-            imageView.widthAnchor.constraint(equalToConstant: 150),
+            imageWidthConstraint,
             
             vStack.topAnchor.constraint(equalTo: imageView.topAnchor),
             vStack.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 16),

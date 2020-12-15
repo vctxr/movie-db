@@ -79,7 +79,7 @@ class ReviewCollectionViewCell: UICollectionViewCell {
     }
     
     override func systemLayoutSizeFitting(_ targetSize: CGSize, withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority, verticalFittingPriority: UILayoutPriority) -> CGSize {
-        return super.systemLayoutSizeFitting(CGSize(width: UIScreen.main.bounds.width - 12, height: UIView.layoutFittingCompressedSize.height), withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
+        return super.systemLayoutSizeFitting(CGSize(width: UIDevice.current.safeAreaWidth - 12, height: UIView.layoutFittingCompressedSize.height), withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
     }
     
     func configure(with viewModel: ReviewViewModel) {

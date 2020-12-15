@@ -188,7 +188,7 @@ final class MovieDetailCollectionViewCell: UICollectionViewCell {
     }
     
     override func systemLayoutSizeFitting(_ targetSize: CGSize, withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority, verticalFittingPriority: UILayoutPriority) -> CGSize {
-        super.systemLayoutSizeFitting(CGSize(width: UIScreen.main.bounds.width - 12, height: UIView.layoutFittingCompressedSize.height), withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
+        super.systemLayoutSizeFitting(CGSize(width: UIDevice.current.safeAreaWidth - 12, height: UIView.layoutFittingCompressedSize.height), withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
     }
     
     @objc private func didTapFavorite() {

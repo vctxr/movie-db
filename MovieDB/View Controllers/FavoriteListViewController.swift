@@ -11,7 +11,6 @@ final class FavoriteListViewController: UIViewController {
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: view.frame.width - 12, height: 250)
         layout.minimumLineSpacing = 6
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -74,6 +73,10 @@ extension FavoriteListViewController: UICollectionViewDelegateFlowLayout, UIColl
         let movieViewModel = viewModel.movieViewModels[indexPath.row]
         cell.configure(with: movieViewModel)
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: UIDevice.current.safeAreaWidth - 12, height: 250)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
