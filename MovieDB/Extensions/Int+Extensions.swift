@@ -12,7 +12,9 @@ extension Int {
     var currencyFormat: String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.maximumFractionDigits = 2
+        formatter.currencyCode = "USD"
+        formatter.currencySymbol = "$"
+        formatter.maximumFractionDigits = 0
         if let str = formatter.string(for: self) {
             return str
         }
