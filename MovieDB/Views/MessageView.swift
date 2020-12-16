@@ -11,6 +11,7 @@ class MessageView: UIView {
     
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
+    let retryButton = UIButton(type: .system)
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -55,13 +56,18 @@ extension MessageView {
         subtitleLabel.textColor = .secondaryLabel
         subtitleLabel.textAlignment = .center
         subtitleLabel.numberOfLines = 0
+        
+        retryButton.setTitle("RETRY", for: .normal)
+        retryButton.setTitleColor(.kitabisaBlue, for: .normal)
+        retryButton.titleLabel?.font = .preferredFont(forTextStyle: .headline)
     }
     
     private func configureLayout() {
-        let stack = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
+        let stack = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel, retryButton])
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .vertical
         stack.spacing = 4
+        stack.setCustomSpacing(12, after: subtitleLabel)
         
         addSubview(stack)
         

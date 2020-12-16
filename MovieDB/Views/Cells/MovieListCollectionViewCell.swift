@@ -118,7 +118,7 @@ extension MovieListCollectionViewCell {
         vStack.addArrangedSubview(overviewLabel)
         
         let imageWidthConstraint = imageView.widthAnchor.constraint(equalToConstant: 150)
-        imageWidthConstraint.priority = .defaultHigh
+        imageWidthConstraint.priority = .required
 
         NSLayoutConstraint.activate([
             imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),

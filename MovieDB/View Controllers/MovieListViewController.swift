@@ -45,6 +45,7 @@ final class MovieListViewController: UIViewController {
     private lazy var messageView: MessageView = {
         let messageView = MessageView()
         messageView.configure(with: "Unable to fetch movies", subtitle: "Please check your internet connection.")
+        messageView.retryButton.addTarget(self, action: #selector(didTapRetry), for: .touchUpInside)
         return messageView
     }()
     
@@ -79,6 +80,19 @@ final class MovieListViewController: UIViewController {
     @objc private func didTapCategory() {
         bottomMenu.isPresented ? bottomMenu.dismiss() : bottomMenu.present(in: view, above: categoryButton)
     }
+    
+    @objc private func didTapRetry() {        
+        switch viewModel.selectedCategory {
+        case .popular:
+            viewModel.fetchMovies(endpoint: .popular)
+        case .upcoming:
+            viewModel.fetchMovies(endpoint: .upcoming)
+        case .topRated:
+            viewModel.fetchMovies(endpoint: .topRated)
+        case .nowPlaying:
+            viewModel.fetchMovies(endpoint: .nowPlaying)
+        }
+    }
 }
 
 
@@ -88,11 +102,12 @@ extension MovieListViewController: MovieListViewModelDelegate {
     
     func didUpdateViewModels(with error: APIError?) {
         if let error = error {
+            print(error)
             switch error {
             case .noConnection:
                 messageView.present(in: view)
             default:
-                break
+                messageView.present(in: view)
             }
         } else {
             messageView.removeFromSuperview()
@@ -120,8 +135,11 @@ extension MovieListViewController: UICollectionViewDelegateFlowLayout, UICollect
         
         if viewModel.isShowingPlaceholder {
             cell.animateShimmer(true)
+            print(indexPath.row)
+            print(viewModel.isShowingPlaceholder)
         } else {
             cell.animateShimmer(false)
+            print(viewModel.isShowingPlaceholder)
             let movieViewModel = viewModel.movieViewModels[indexPath.row]
             cell.configure(with: movieViewModel)
         }
@@ -151,7 +169,7 @@ extension MovieListViewController: BottomMenuViewDelegate {
         
         collectionView.setContentOffset(CGPoint(x: 0, y: -12), animated: false)
         viewModel.selectedCategory = menu.category
-        
+
         switch menu.category {
         case .popular:
             viewModel.fetchMovies(endpoint: .popular)

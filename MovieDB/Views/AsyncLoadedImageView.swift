@@ -68,6 +68,11 @@ final class AsyncLoadedImageView: UIImageView, Shimmerable {
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        
+        // Remove default implicit CALayer animation of 0.25s from frame change
+        CATransaction.begin()
+        CATransaction.setAnimationDuration(0)
         gradientLayer.frame = bounds
+        CATransaction.commit()
     }
 }
