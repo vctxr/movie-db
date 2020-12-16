@@ -23,5 +23,6 @@ final class ShimmerableLabel: UILabel, Shimmerable {
     override func layoutSubviews() {
         super.layoutSubviews()
         gradientLayer.frame = bounds
+        gradientLayer.removeAllAnimations() // Remove implicit animation from frame change
     }
 }
