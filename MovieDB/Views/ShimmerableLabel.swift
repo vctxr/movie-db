@@ -22,7 +22,11 @@ final class ShimmerableLabel: UILabel, Shimmerable {
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        
+        // Remove default implicit CALayer animation of 0.25s from frame change
+        CATransaction.begin()
+        CATransaction.setAnimationDuration(0)
         gradientLayer.frame = bounds
-        gradientLayer.removeAllAnimations() // Remove implicit animation from frame change
+        CATransaction.commit()
     }
 }
